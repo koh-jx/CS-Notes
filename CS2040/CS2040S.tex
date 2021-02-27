@@ -1,0 +1,930 @@
+\documentclass{article}
+
+% Formatting purposes
+\usepackage[margin=1in]{geometry}
+
+% Hyperlink functionality
+% For \url
+\usepackage{hyperref}
+
+% Graphics Functionality
+% For \includegraphics, \graphicspath{} and \begin{figure}
+\usepackage{graphicx, caption, subcaption}
+
+% Table functionality
+\usepackage{multirow, multicol}
+\usepackage{attrib}
+
+\usepackage{bm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}% http://ctan.org/pkg/booktabs
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
+
+\title{CS2040 Notes}
+\author{Koh Jia Xian}
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+
+    \pagebreak
+
+    \section{Definitions}
+
+    \subsection{Time and Space Complexity}
+
+    Space Complexity = \textbf{Total} space ever allocated
+
+    \subsubsection{Big O}
+
+    $T(n) = O(f(n))$ if:
+    \begin{enumerate}
+        \item There exists a constant $c > 0$
+        \item and a constant $n_{0} > 0$
+    \end{enumerate}
+    such that for all $n > n_{0}$, \\\\$\bm{T(n) \leq c f(n)}$\\\\
+    \emph{ie) An upper bound above a certain size n; Always try to get the tightest bound}
+
+    \subsubsection{Big Omega}
+
+    $T(n) = \Omega(f(n))$ if:
+    \begin{enumerate}
+        \item There exists a constant $c > 0$
+        \item and a constant $n_{0} > 0$
+    \end{enumerate}
+    such that for all $n > n_{0}$, \\\\$\bm{T(n) \geq c f(n)}$\\\\
+    \emph{ie) A lower bound above a certain size n}
+
+    \subsection{Pre and Post-conditions}
+
+    \begin{table}[htbp]
+        \begin{tabular}{ll}
+            \textbf{Precondition} & Fact that is true when the function begins\\
+            \textbf{Postcondition} & Fact that is true when the function ends\\
+        \end{tabular}
+    \end{table}
+
+    \subsection{Invariants}
+        \begin{tabular}{ll}
+            \textbf{Invariants} & Relationship between variables that is \textbf{always true}.\\
+            \textbf{Loop Invariants} & Relationship between variables that is true at the beginning (or end) of each iteration of a loop.\\
+        \end{tabular}
+
+
+    \subsection{Stability and In-Place sorting}
+    When 2 of the same keys are sorted:
+    \begin{itemize}
+        \item If its value becomes out of order, \textbf{Unstable}
+        \item \textbf{Stability: Preserving order of repeated elements}
+    \end{itemize}
+
+    General Rule-of-Thumb, if got swap here-swap there (ie \textbf{NOT IN-PLACE}), it is unstable
+
+    \subsection{Probability and Expected Value}
+
+    $E[X] = e_{1}p_{1} + e_{2}p_{2} + ... + e_{k}p_{k}$
+
+
+    \subsection{Trees}
+
+    \begin{tabular}{ll}
+        \textbf{Successor} & Next largest value in the tree.\\
+        \textbf{Height} & Number of edges on longest path from root to leaf.\\
+        & \tabitem $h(v) = 0$ if v is a leaf\\
+        & \tabitem $h(v) = max(h(v.left), h(v.right)) + 1$\\
+    \end{tabular}
+
+    
+
+
+
+    \pagebreak
+
+    \section{Binary Search}
+    For a \textbf{sorted }array, take middle, compare to key: search LHS or RHS of mid.
+
+    \begin{verbatim}
+    int search(A, key, n)
+        begin = 0
+        end = n-1
+        while begin < end do:
+            mid = begin + (end-begin)/2;
+            if key <= A[mid] then
+                end = mid
+            else begin = mid+1
+        return (A[begin]==key) ? begin : -1    
+    \end{verbatim}
+
+
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Functionality} & \tabitem If element not in array, return index\\
+        & \tabitem If element not in array, return -1\\
+        \midrule
+        \textbf{Precondition} & \tabitem Array is of size n\\
+        & \tabitem Array is sorted\\
+        \midrule
+        \textbf{Postcondition} & If element is in the array: A[begin] = key\\
+        \midrule
+        \textbf{Invariant (Correctness)} & $A[begin] \leq key \leq A[end]$ \\
+        & \tabitem \emph{The key is in the range of the Array}\\
+        \midrule
+        \textbf{Invariant (Speed)} & $(end-begin) \leq n/2^{k}$ in iteration k \\
+        \bottomrule
+    \end{tabular}
+
+    \bigskip
+    \textbf{Not just for searching Arrays:}
+    \begin{enumerate}
+        \item \begin{itemize}
+            \item Assuming a complicated function,
+            \item Assume function is always increasing: $complicatedFunction(i) < complicatedFunction(i+1)$
+            \item $\therefore$ Find minimum value j such that $complicatedFunction(j) > 100$
+        \end{itemize}
+
+        \item Peak Finding (1 or 2 Dimensions)
+        \item QuickSelect
+    \end{enumerate}
+
+    \pagebreak
+
+    \subsection{Peak Finding}
+
+    Want to find an index i such that $\bm{arr[i] \geq arr[i-1]}$ \&  $\bm{arr[i] \leq arr[i+1]}$
+
+    \begin{verbatim}
+    FindPeak(A, n)
+        //Recurse on right
+        if A[n/2+1] > A[n/2] then
+            FindPeak(A[n/2+1..n], n/2)
+
+        //Recurse on left
+        else if A[n/2–1] > A[n/2] then
+            FindPeak(A[1..n/2‐1], n/2)
+
+        else A[n/2] is a peak; return n/2
+
+    \end{verbatim}
+    
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Functionality} & On an unsorted array, find A peak: \\
+        & local minimum or maximum (not a specific key)\\
+        \midrule
+        \textbf{Invariants (Correctness)} & \tabitem There exists a peak in the range $[begin, end]$\\
+        & Every peak in $[begin, end]$ is a peak in $[1, n]$.\\
+        \midrule
+        \textbf{Running Time} & $T(n) = T(n/2) + \theta(1)$\\
+        & Recurse for $log2(n)$ times\\
+        & $\therefore O(logn)$\\
+        \bottomrule
+    \end{tabular}
+
+    \subsection{Steep Peaks}
+
+    Want to find a peak such that its left and right side are \textbf{strictly lower than it}.\\\\
+
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Functionality} & On an unsorted array, find A peak: local minimum or maximum (not a specific key)\\
+        & \textbf{If both sides are the same as mid, recurse both sides}\\
+        \midrule
+        \textbf{Running Time} & $T(n) = $\textbf{2}$T(n/2) + \theta(1)$\\
+        & $ = 16T(n/16) + 8  + 4 + 2 + 1$\\
+        & $...$\\
+        & $ = nT(1) + n/2 + n/4 + ... + 1$ \\
+        & $\bm{ = O(n)}$ \textbf{Sum of Geometric Progression}\\
+        \bottomrule
+    \end{tabular}
+
+    \pagebreak
+
+    \subsection{QuickSelect}
+
+    Find kth smallest element\\
+
+    \noindent Makes use of QuickSort's \hyperref[partition]{partition} to ensure that the kth smallest element 
+    is before or after the randomly selected pivot
+
+    \begin{verbatim}
+    Select(A[1..n], n, k)
+        if (n == 1) then return A[1];
+        else Choose random pivot index pIndex.
+            p = partition(A[1..n], n, pIndex)
+            if (k == p) then return A[p];
+            else if (k < p) then
+                return Select(A[1..p–1], k)
+            else if (k > p) then
+                return Select(A[p+1], k – p)
+    \end{verbatim}
+
+    \noindent Recurrence: $T(n) = T(n/2) + O(n)$\\
+
+    \noindent Time Complexity: $\bm{O(n)}$ (Sum of G.P.)
+
+    \subsubsection{Paranoid Select}
+
+    Repeatedly partition until at least n/10 in each half of partition
+
+    $E[T(n)] \leq E[T(9n/10)] + E[num of partitions](n)$
+
+    $\leq E[T(9n/10)] + 2n$
+
+    $\leq O(n)$
+
+    \pagebreak
+
+    \section{Sorting}
+
+    \subsection{Bubble Sort}
+
+    Iteratively swap largest values to the top.
+
+    \begin{verbatim}
+    BubbleSort(A, n)
+        repeat (until no swaps) :
+            for j <- 1 to n-1
+                if A[j] > A[j+1] then swap(A[j], A[j+1])
+
+    \end{verbatim}
+    
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Loop Invariant} & At the end of iteration j, the biggest j items are correctly sorted \\
+        & in the \textbf{final j positions} of the array.\\
+        \midrule
+        \textbf{Invariant (Correctnness)} & Sorted after n iterations\\
+        \midrule
+        \textbf{Running Time} & \\
+        \tabitem Best Case & $O(n)$ [Already Sorted]\\
+        \tabitem Average Case & $O(n^{2})$\\
+        \tabitem Worst Case & $O(n^{2})$ [n iterations]\\
+        \midrule
+        \textbf{Space Consumption} & $O(1)$\\
+        \midrule
+        \textbf{Stability} & \textbf{Stable}, only swap elements that are different\\
+        \bottomrule
+    \end{tabular}
+
+    \bigskip
+
+    \subsection{Selection Sort}
+
+    Find minimum element and swap it directly with the front.
+
+    \begin{verbatim}
+    SelectionSort(A, n)
+        for j <- 1 to n-1:
+            find minimum element A[j] in A[j..n]
+            swap(A[j], A[k])
+    \end{verbatim}
+    
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Loop Invariant} & At the end of iteration j: the smallest j items are correctly sorted \\
+        & in the \textbf{first j positions} of the array.\\
+        \midrule
+        \textbf{Running Time} & $n + (n-1) + (n-2) + ... + 1$\\
+        & $ = \frac{n(n-1)}{2}$ (Sum of A.P.)\\
+        & $ = O(n^{2})$\\
+        \tabitem Best Case & $O(n^{2})$ [If already Sorted, will swap anyway]\\
+        \tabitem Average Case & $O(n^{2})$\\
+        \tabitem Worst Case & $O(n^{2})$ [n swaps]\\
+        \midrule
+        \textbf{Space Consumption} & $O(1)$\\
+        \midrule
+        \textbf{Stability} & \textbf{Unstable}, swap changes order\\
+        \bottomrule
+    \end{tabular}
+
+    \pagebreak
+
+    \subsection{Insertion Sort}
+
+    Iteratively swaps the current element into its rightful place in the sorted left side of the array.
+
+    \begin{verbatim}
+    InsertionSort(A, n)
+        for j <- 2 to n
+            key <- A[j]
+            i <- j-1
+            while (i > 0) and (A[i] >key)
+                A[i+1] <- A[i]
+                i <- i-1
+            A[i+1] <- key
+    \end{verbatim}
+    
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Loop Invariant} & At the end of iteration j: the \textbf{first j items} in the array \\
+        &  are in sorted order.\\
+        \midrule
+        \textbf{Running Time} & $1 + 2 + 3 + ... + n$\\
+        & $ = \frac{n(n-1)}{2}$ (Sum of A.P.)\\
+        & $ = O(n^{2})$\\
+        \tabitem Best Case & $O(n)$ [Already Sorted]\\
+        \tabitem Average Case & $O(n^{2})$\\
+        \tabitem Worst Case & $O(n^{2})$ [Inverse Sorted]\\
+        \midrule
+        \textbf{Space Consumption} & $O(1)$\\
+        \midrule
+        \textbf{Stability} & \textbf{Stable}, swap doesn't change order, \\
+        & as long as implemented properly (\textbf{A[i] $>$ key})\\
+        \bottomrule
+    \end{tabular}
+
+    \bigskip
+
+    Insertion Sort can be fast(er than MergeSort!) if \textbf{List is mostly sorted}
+
+
+    \subsection{MergeSort}
+
+    \textbf{Divide-and-Conquer}, sort two halves, merge two sorted halves
+
+    \begin{verbatim}
+    MergeSort(A, n)
+        if (n=1) then return;                                               //O(1)
+        else:           
+            X <- MergeSort(A[1..n/2], n/2);                                 //T(n/2)
+            Y <- MergeSort(A[n/2+1, n], n/2);                               //T(n/2)
+            return Merge (X,Y, n/2); //2 sorted halves combined together    //O(n)
+    \end{verbatim}
+    
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Running Time} & \\
+        Running Time of Merge & Given A and B of sizes n/2, $\bm{O(n)}$ to move each element back into list\\
+        & $\therefore T(n) = O(1)$ (if $n = 1$)\\
+        & $= 2T(n/2) + cn$ (if $n > 1$)\\
+        & $\therefore$ Height of recursion tree $h = logn$, every level $cn$ operations\\
+        & $\therefore T(n) = cnlogn$, $\bm{O(n) = nlogn}$\\
+        \tabitem Best Case & $O(nlogn)$\\
+        \tabitem Average Case & $O(nlogn)$\\
+        \tabitem Worst Case & $O(nlogn)$\\
+        \midrule
+        \textbf{Space Consumption} & $\bm{O(n)}$ [Using 1 temporary array, Switch the order of A and B at
+        every recursive call.]\\
+        \midrule
+        \textbf{Stability} & \textbf{Stable}\\
+        \bottomrule
+    \end{tabular}
+
+    \bigskip
+
+    MergeSort can be slower for \textbf{Smaller number of items to sort}
+
+    \pagebreak
+
+    \subsection{QuickSort}
+
+    Separate larger and smaller than a chosen \textbf{pivot} (Partitioning), recursively sort both sub-arrays.
+    
+    \label{partition}
+    
+    \begin{verbatim}
+     QuickSort(A[1..n], n)
+        if (n==1) then return;
+        else
+            Choose pivot index pIndex   //How?
+            p = partition(A[1..n], n, pIndex)
+            x = QuickSort(A[1..p-1], p-1)
+            y = QuickSort(A[p+1..n], n-p)
+
+    //Returns the index of the pivot
+    partition(A[1..n], n, pIndex)       // Assume no duplicates, n>1
+        pivot = A[pIndex];              // pIndex is the index of pivot
+        swap(A[1], A[pIndex]);          // store pivot in A[1]
+        low = 2;                        // start after pivot in A[1]
+        high = n+1;                     // Define: A[n+1] = Infinity
+        while (low < high)
+            while (A[low] < pivot) and (low < high) do low++;
+            while (A[high] > pivot) and (low < high) do high– – ;
+            if (low < high) then swap(A[low], A[high]);
+        swap(A[1], A[low–1]);
+        return low–1;
+    \end{verbatim}
+    
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Invariants} & \tabitem For every $i \geq high$ : $A[i] > pivot$\\
+        & \tabitem For every $1 < j < low$ : $A[j] < pivot$\\
+        \textbf{Running Time} & \\
+        Running Time of Partition & $O(n)$\\
+        \tabitem Best Case & $O(nlogn)$\\
+        \tabitem Average Case & $O(nlogn)$\\
+        \tabitem Worst Case & $O(n^{2})$ [eg All elements duplicates]\\
+        \midrule
+        \textbf{Space Consumption} & $O(1)$\\
+        & \emph{Extra Memory allows QuickSort to be stable}\\
+        \midrule
+        \textbf{Stability} & \textbf{Unstable}\\
+        \bottomrule
+    \end{tabular}
+
+
+    
+
+    \subsection{QuickSort Optimisations}
+
+    \subsubsection{Base Case?}
+    \begin{itemize}
+        \item Unoptimized: Recurse to single-element arrays
+        \item Switch to Insertion Sort for small arrays (Relies on fact that InsertionSort is fast for small arrays)
+        \item Halt Recursion early, leaving small arrays unsorted. Then perform InsertionSort on entire array
+    \end{itemize}
+    
+    \pagebreak
+
+    \subsubsection{3-Way Partitioning}
+
+    Deal with duplicates in arrays
+
+    \begin{tabular}{ll}
+        \textbf{Option 1} & \textbf{2-pass Partitioning}\\
+        & 1. Regular Partition\\
+        & 2. Pack Duplicates (of pivot) together\\
+        \textbf{Option 2} & \textbf{1-pass Partitioning}\\
+        & \tabitem Standard Solution\\
+        & \tabitem Mantain Four Regions of Array (See Fig \ref{1pass})\\
+    \end{tabular}
+
+    \begin{figure}[htbp]
+        \begin{center}
+        \includegraphics[width=4in,keepaspectratio]{3-way.JPG}
+        \caption{1-pass Partitioning}
+        \label{1pass}
+        \end{center}
+    \end{figure}
+
+    \begin{tabular}{ll}
+        \textbf{ If }$bm{A[current] < pivot}$ & low++\\
+        & Swap $A[current]$, $A[low]$\\
+        & current++\\
+        \textbf{ If} $bm{A[current] == pivot}$ & current++\\
+        \textbf{ If} $bm{A[current] > pivot}$ & Swap $A[current]$, $A[high]$ \\
+        & high--\\
+    \end{tabular}
+
+    \subsubsection{Choice of Pivot}
+    In the worst case(s),
+    
+    \noindent\begin{tabular}{ll}
+        \textbf{First Element} & A[1]\\
+        \textbf{Last Element} & A[n]\\
+        \textbf{Middle Element} & A[n/2]\\
+        \textbf{Median of first, last and middle} & Median of the above 3\\
+    \end{tabular}
+    
+    \noindent are equally bad, if \textbf{n executions of partition, sorting 1 element each: }\\
+    
+    $T(n) = T(n-1) + T(1) + n$
+    
+    (From Quicksort of n-1 elements + QuickSort on 1 element + Cost of partition on n elements)
+
+    $\bm{\therefore O(n^{2})}$ \textbf{time}.\\
+
+    \noindent\textbf{If can choose Median: Good Performance }$\bm{O(nlogn)}$\\
+    
+    \noindent\textbf{If could split array (1:10) : (9:10): Good Performance }$\bm{O(nlogn)}$\\\\
+    $\therefore$ A pivot is \textbf{good} if divides array into 2 pieces, each of which is size \textbf{at least} $\bm{n/10}$
+
+    \noindent\textbf{Choose pivot at random: PARANOID QUICKSORT}
+
+    Repeat partition until $p > (1/10)n$ and $p < (9/10)n$, 
+
+    Expected number of times to choose a good pivot: $10/8 \approx 2$
+    
+    $T(n) = T(n-1) + T(1) + 2n$\emph{(Expected no. of iterations to repeat is 2)} 
+    
+    Hence, worst-case expected time $\bm{= O(nlogn)}$
+
+
+    \pagebreak
+
+    \section{Sorting Summary}
+
+    \begin{tabular}{|l||l|l|l|l|l|}
+        \toprule
+        \textbf{Name} & \textbf{Best Case} & \textbf{Average Case} & \textbf{Worst Case} & \textbf{Extra Memory} & \textbf{Stable}\\
+        \midrule
+        \midrule
+        \textbf{Bubble Sort} & $O(n)$ & $O(n^{2})$ & $O(n^{2})$ & $O(1)$ & Yes\\
+        % \hline
+        \textbf{SelectionSort} & $O(n^{2})$ & $O(n^{2})$ & $O(n^{2})$ & $O(1)$ & No\\
+        % \hline
+        \textbf{Insertion Sort} & $O(n)$ & $O(n^{2})$ & $O(n^{2})$ & $O(1)$ & Yes\\
+        % \hline
+        \textbf{Merge Sort} & $O(nlogn)$ & $O(nlogn)$ & $O(nlogn)$ & $O(n)$ & Yes\\
+        % \hline
+        \textbf{Quick Sort} & $O(nlogn)$ & $O(nlogn)$ & $O(n^{2})$ & $O(1)$ & No\\
+        \bottomrule
+    \end{tabular}
+
+    \subsection{Remarks}
+    \begin{itemize}
+        \item BubbleSort vs InsertionSort: InsertionSort faster for almost-sorted arrays
+        \item Paranoid Quicksort Worstcase: $O(nlogn)$
+        \item \textbf{Any others?}
+    \end{itemize}
+
+    \subsection{Invariants}
+    \begin{tabular}{|l||l|}
+        \toprule
+        \textbf{Name} & \textbf{Invariant}\\
+        \midrule
+        \midrule
+        \textbf{Bubble Sort} &  At the end of iteration j, the biggest j items are correctly sorted \\
+        & in the \textbf{final j positions} of the array.\\
+        \hline
+        \textbf{SelectionSort} & At the end of iteration j: the smallest j items are correctly sorted \\
+        & in the \textbf{first j positions} of the array.\\
+        \hline
+        \textbf{Insertion Sort} & At the end of iteration j: the \textbf{first j items} in the array \\
+        &  are in sorted order.\\
+        \hline
+        \textbf{Merge Sort} & idk lmfao probably something about at the end of iteration j of merge\\
+        & every $2^{j}$ group of items are in sorted order, where $2^{j} < n$ (???)\\
+        & just pulling something out of my ass :)\\ 
+        \hline
+        \textbf{Quick Sort} & \tabitem For every $i \geq high$ : $A[i] > pivot$\\
+        & \tabitem For every $1 < j < low$ : $A[j] < pivot$\\
+        \bottomrule
+    \end{tabular}
+
+    \pagebreak
+
+    \section{Trees}
+
+    Data Structure: Implementing a Dictionary, for eg
+
+    \subsection{Binary (Search) Trees}
+
+    \begin{tabular}{l}
+        \tabitem Binary Tree is either: 1) Empty, 2) A node pointing to 2 binary trees.\\
+        \tabitem Binary Search Trees: \textbf{All in left sub-tree} $<$ key $<$ \textbf{All in right sub-tree}\\
+        \tabitem \textbf{Binary Tree} is height balanced if every node in the tree is height-balanced.\\
+        \tabitem A height-balanced tree with n nodes has height $h < 2log(n)$, $\therefore O(logn)$.\\
+    \end{tabular}
+    \bigskip
+
+    \noindent\begin{tabular}{ll}
+        \textbf{Time Complexity of search(key) in BST:} & Height of tree\\
+        & \tabitem $\bm{O(logn)}$ if balanced\\
+        & \tabitem Else, worst-case $\bm{O(n)}$\\
+    \end{tabular}
+
+    \subsection{Tree Traversal}
+
+    \begin{tabular}{ll}
+        \textbf{In-Order:} & Visit left sub-tree, then SELF, then right sub-tree\\
+        \textbf{Pre-Order:} & Visit SELF, then left sub-tree, then right sub-tree\\
+        \textbf{Post-Order:} & Visit left sub-tree, then right sub-tree, then SELF\\
+        \textbf{Level-Order} & Visit EVERY node at that height, then go lower level\\
+        \multicolumn{2}{l}{$\bm{O(n)}$ \textbf{Time Complexity} ($\because$ Visit each node once)}\\
+    \end{tabular}
+
+    \subsection{Successor Finding}
+
+    \begin{tabular}{ll}
+        \textbf{Basic Strategy: successor(key)} & 1. Search for key\\
+        &2. If $(result > key)$, then return result.\\
+        &3. If $(result \leq key)$, then search for successor
+        of result.\\
+    \end{tabular}
+
+    \begin{verbatim}
+    //Search for the successor of the current TreeNode
+    public TreeNode successor(){
+        if (rightTree != null) return rightTree.searchMin();
+
+        TreeNode parent = parentTree;
+        TreeNode child = this;
+        while ((parent != null) && (child == parent.rightTree))
+            child = parent;
+            parent = child.parentTree;
+        }
+        
+        return parent;
+    }
+    \end{verbatim}
+
+    \begin{itemize}
+        \item $\bm{O(height)}$ \textbf{Time Complexity}
+    \end{itemize}
+
+
+    \pagebreak
+
+    \subsection{Insertion/Deletion}
+
+    Insertion trivial:
+    
+    If less than node, node.left == null, insert at left else recurse left. 
+    
+    If more than node, node.right == null, insert at right, else recurse right.\\\\
+
+
+    \noindent\begin{tabular}{ll}
+        \toprule
+        \textbf{3 Cases for delete(v):} & \\
+        \textbf{No Children}& Remove v\\
+        \hline
+        \textbf{1 Child}& Remove v, connect child(v) to parent(v)\\
+        \hline
+        \textbf{2 Children}& 1. x = successor(v)\\
+        & 2. delete(x) (which may cause more calls of delete)\\
+        & 3. remove(v)\\
+        & 4. connect x to left(v), right(v), parent(v)\\
+        \bottomrule
+    \end{tabular}\\\\
+
+    \begin{itemize}
+        \item \textbf{NOTE: Successor of deleted node has at most 1 child!} (A right node)
+        \item $\bm{O(height)}$ \textbf{Time Complexity} (BOTH insertion and deletion)
+    \end{itemize}
+
+    \subsection{Balance}
+
+    \textbf{A BST is balanced if }$\bm{h = O(log n)}$
+
+    \bigskip
+    
+    \noindent\begin{tabular}{ll}
+        \textbf{How to get a Balanced Tree:}\\
+        1. Define good property of tree & [AUGMENT]\\
+        2. Show that if property holds, tree is balanced. & [DEFINE BALANCE CONDITION]\\
+        3. Every insertion/deletion, make sure good property still holds: & \textbf{[INVARIANT]}\\
+        -If not, fix it & [MAINTAIN BALANCE]\\
+    \end{tabular}
+
+    \pagebreak
+
+    \subsection{AVL Trees}
+    \begin{tabular}{l}
+        \tabitem Every node, store height $h = max(left.height, right.height) + 1$ \\
+        \tabitem On insert \& delete, update height\\
+        \tabitem node v is height-balanced if $\bm{|v.left.height – v.right.height| \leq 1}$
+        \tabitem Maintains balance using Tree-Rotations
+    \end{tabular}
+
+    \subsubsection{Rotations}
+
+    \begin{tabular}{l}
+        \tabitem A is LEFT-heavy if left.height > right.height\\
+        \tabitem A is RIGHT-heavy if right.height > left.height.\\
+    \end{tabular}
+
+    \bigskip
+
+    \noindent\begin{tabular}{ll}
+        \toprule
+        \textbf{Assuming node v is Left-Heavy}\\
+        \hline
+        \hline
+        \tabitem v.left is balanced: & \hyperref[rightrot]{right-rotate(v)}\\
+        \hline
+        \tabitem v.left is left-heavy: & \hyperref[rightrot2]{right-rotate(v)}\\
+        \hline
+        \tabitem v.left is right-heavy: & 1. \hyperref[case31]{left-rotate(v.left)}\\
+        & 2. \hyperref[case32]{right-rotate(v)}\\
+        \bottomrule
+        If v is \textbf{Right-Heavy: } & \textbf{Symmetric 3 cases}\\
+        \bottomrule
+    \end{tabular}
+
+    \bigskip
+
+    Size of tree doesn't matter, $\therefore O(1)$ time.
+    
+    \subsubsection{Insertion}
+
+    \begin{tabular}{l}
+        1. Insert tree in BST \\
+        2. Walk up tree:\\
+        \tabitem At every step, check for balance:\\
+        \tabitem If out-of-balance, use rotations to rebalance\\    
+        Only need \textbf{2 Rotations} (Since in all cases, only need to reduce height of sub-tree by 1)\\  
+    \end{tabular}
+    
+
+    \subsubsection{Deletion}
+
+    \begin{tabular}{l}
+        0a. If v has no child, just delete \\
+        0b. If v has 1 child, connect child to parent\\
+        1. If v has 2 children, swap it with its successor.\\
+        2. Delete node v from binary tree (and reconnect children)\\
+        \tabitem Since successor has at most 1 (right) child, will only have to reconnect 1 node\\
+        3. For every ancestor of the deleted node:\\
+        \tabitem Check if it is height-balanced\\
+        \tabitem If not, perform a rotation\\
+        \tabitem Continue to the root\\
+        (\textbf{Deletion may take up to O(logn) rotations})\\        
+    \end{tabular}
+
+
+    \pagebreak
+    
+    \subsubsection{Graphical Interpretation}
+
+    \begin{figure}[htbp]
+        \begin{center}
+        \includegraphics[width=5in,keepaspectratio]{Case 1 Right Rotate.JPG}
+        \caption{v.left balanced: right-rotate(v)}
+        \label{rightrot}
+        \end{center}
+    \end{figure}
+
+    \begin{figure}[htbp]
+        \begin{center}
+        \includegraphics[width=5in,keepaspectratio]{case 2 right rotate.JPG}
+        \caption{v.left left-heavy: right-rotate(v)}
+        \label{rightrot2}
+        \end{center}
+    \end{figure}
+
+    \begin{figure}[htbp]
+        \begin{center}
+        \includegraphics[width=5in,keepaspectratio]{Case 3.1.JPG}
+        \caption{v.left right-heavy: First left-rotate(v.left)}
+        \label{case31}
+        \end{center}
+    \end{figure}
+
+    \begin{figure}[htbp]
+        \begin{center}
+        \includegraphics[width=5in,keepaspectratio]{Case 3.2.JPG}
+        \caption{v.left right-heavy: then right-rotate(v)}
+        \label{case32}
+        \end{center}
+    \end{figure}
+
+
+    \pagebreak
+
+    \section{Other (Augmented) Trees}
+    \subsection{Tries}
+    Store each letter of a String as a node, using a special flag to represent the end of a word.
+
+    \begin{tabular}{l}
+        Cost to search a string of length L: $\bm{O(L)}$\\
+        Trie tends to be faster compared to normal BST with strings\\
+        \tabitem Does not depend on size of total text\\
+        \tabitem Does not depend on number of strings (Esp if string not in trie)\\
+        Trie uses more space (in terms of more nodes)
+    \end{tabular}
+    
+    \subsection{Order Statistics}
+
+    \begin{tabular}{l}
+        \tabitem To know the order of the node (ie rank of the key in the data structure)\\
+        \tabitem Store \textbf{size of sub-tree in every node}\\
+        \tabitem select(k): finds node with rank k\\
+        \tabitem rank(v): Computes rank at node v\\
+        \tabitem During insertion, maintain weight during \hyperref[orderstats]{rotation}
+    \end{tabular}
+
+    \begin{verbatim}
+        select(k)
+            rank = left.weight + 1;
+            if (k == rank) then
+                return v;
+            else if (k < rank) then
+                return left.select(k);
+            else if (k > rank) then
+                return right.select(k–rank);
+    \end{verbatim}
+
+    \begin{verbatim}
+        rank(node)
+            rank = node.left.weight + 1;
+            while (node != null) do
+                if node is left child then
+                    do nothing
+                else if node is right child then
+                    rank += node.parent.left.weight + 1;
+                node = node.parent;
+            return rank;
+    \end{verbatim}
+
+    \begin{figure}[htbp]
+        \begin{center}
+        \includegraphics[width=3in,keepaspectratio]{orderstats.JPG}
+        \caption{Update weights during insertion}
+        \label{orderstats}
+        \end{center}
+    \end{figure}
+
+    \pagebreak
+
+    \subsection{Interval Trees}
+
+    \begin{tabular}{l}
+        \textbf{Find an interval containing a value}\\
+        \tabitem Each node is an interval, sorted by \textbf{left endpoint}\\
+        \tabitem Each node contains the \textbf{maximum endpoint in subtree}\\
+        \tabitem Running time of search simply $O(logn)$\\
+    \end{tabular}
+
+    \begin{verbatim}
+        //Find interval containing x
+        interval-search(x)
+            c = root;
+            while (c != null and x is not in c.interval) do
+                if (c.left == null) then
+                    c = c.right;
+                else if (x > c.left.max) then
+                    c = c.right;
+                else c = c.left;
+            return c.interval;
+    \end{verbatim}
+
+    \bigskip
+
+    \begin{tabular}{l}
+        Search find an overlapping interval, if it exists.\\
+        \tabitem If search goes right: No overlap in left-subtree\\
+        $\therefore$ \textbf{key is in right subtree or it is not in tree}\\
+        \tabitem If search goes left and no overlap, then key $<$ every interval in right sub-tree.\\
+        $\therefore$ \textbf{Either finds key in left subtree or it is not in the tree}\\
+    \end{tabular}
+
+    \pagebreak 
+
+    \subsection{Range Trees/Orthogonal Range Searching}
+
+    \begin{tabular}{l}
+        \textbf{Find everyone between a certain range}\\
+        \tabitem Stores all points in the \textbf{leaves} (Internal nodes store copies)\\
+        \tabitem Internal node v stores \textbf{max(v.left)}\\
+        \tabitem First find the 'split node': Is node between specified range?\\
+        $\therefore$ Do both Left and Right traversal at split node to get all nodes within range\\
+    \end{tabular}
+
+    \begin{verbatim}
+        FindSplit(low, high)
+            v = root;
+            done = false;
+            while !done {
+                if (high <= v.key) then v=v.left;
+                else if (low > v.key) then v=v.right;
+                else (done = true);
+            }
+            return v;
+    \end{verbatim}
+
+    \begin{verbatim}
+        RightTraversal(v, low, high)
+            if (v.key <= high) {                //Still within range
+                all-leaf-traversal(v.left);
+                RightTraversal(v.right, low, high);
+            } else {                           //Left max larger than range, just go left
+                RightTraversal(v.left, low, high);
+            }
+    \end{verbatim}
+
+    \begin{verbatim}
+        LeftTraversal(v, low, high)
+            if (low <= v.key) {                 //Still within range
+                all-leaf-traversal(v.right);
+                LeftTraversal(v.left, low, high);
+            } else {                            //Left max smaller than range, just go right
+                LeftTraversal(v.right, low, high);
+            }
+    \end{verbatim}
+
+    \bigskip
+
+    \begin{tabular}{l}
+        \tabitem Finding split node: $O(logn)$\\
+        \tabitem Traversals recurse at most $O(logn)$ times, \\outputting all (all-leaf-traversal())
+        is $\bm{O(k)}$, where k is number of items found.\\
+        \tabitem $\therefore$ \textbf{Query time complexity } $\bm{ = O(logn + k)}$\\
+        \tabitem Preprocessing (buildtree) time complexity: $O(nlogn)$\\
+        (Split into left and right, take highest value of left and put as key\\
+        If numofelements==1, then set as leaf)\\
+        \tabitem Space Complexity: $O(n)$\\
+        \tabitem \emph{If just want to know the count: keep count of num of nodes in each sub-tree,} \\
+        \emph{and retreive that instead of all-leaf-traversal.}\\
+    \end{tabular}
+
+    \bigskip
+
+    \noindent Related: kd-trees (k-dimension)
+
+    \pagebreak
+
+    \subsection{B-trees}
+    
+    
+
+    
+
+    
+
+\end{document}
+
+
