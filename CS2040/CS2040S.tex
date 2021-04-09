@@ -35,7 +35,10 @@
 
     \subsection{Time and Space Complexity}
 
-    Space Complexity = \textbf{Total} space ever allocated
+    \begin{itemize}
+        \item Space Complexity = \textbf{Total} space ever allocated
+        \item Amortized cost $T(n)$ if $\forall k \in \mathbb{Z}$, cost of operation is $\leqq kT(n)$
+    \end{itemize}
 
     \subsubsection{Big O}
 
@@ -102,7 +105,36 @@
 
     
 
+    \pagebreak
 
+    \section{Common Time Complexities}
+
+
+    \begin{tabular}{|l|c|l|}
+        \toprule
+        \textbf{Recurrence} & \textbf{Complexity} & \textbf{Remarks}\\
+        \toprule
+        $T(n) = 2T(n/2) + O(n)$ & $O(nlogn)$ & Height of logn, n each 'level'\\
+        \midrule
+        $T(n) = T(n / 2) + O(1)$ & $O(logn)$ & Height of logn, 1 each 'level'\\
+        \midrule
+        $T(n) = 2T(n / 2) + O(1)$ & $O(n)$ & 1, 2, 4, ... n: Sum of GP\\
+        \midrule
+        $T(n) = T(n / 2) + O(n)$ & $O(n)$ & n, n/2, n/4 ... 1: Sum of GP\\ 
+        \bottomrule
+    \end{tabular}
+
+    \subsection{AP GP Sums}
+
+    \begin{tabular}{l}
+        \toprule
+        For AP, $S_{n} = \frac{1}{2}n(a_{1} + a_{n})$\\
+        \tabitem If AP is 1, 2,...n, $S_{n} = \frac{n^{2} + n}{2} = O(n^{2})$\\
+        \midrule
+        For GP, $S_{n} = \frac{a(r^{n}-1)}{r-1} = \frac{a(1 - r^{n})}{1- r}$\\
+        \tabitem Sum to $\infty$ $S_{\infty} = \frac{a}{1-r}$\\
+        \tabitem If GP is 1, 2, 4...n, where a = n, $r = 1/2$, $S_{n} = \frac{a}{1-r} = \frac{n}{1-0.5} = O(n)$\\
+    \end{tabular}
 
     \pagebreak
 
@@ -558,6 +590,33 @@
         \bottomrule
     \end{tabular}
 
+
+    \begin{tabular}{|l|c|l|}
+        \toprule
+        \textbf{Recurrence} & \textbf{Complexity} & \textbf{Remarks}\\
+        \toprule
+        $T(n) = 2T(n/2) + O(n)$ & $O(nlogn)$ & Height of logn, n each 'level'\\
+        \midrule
+        $T(n) = T(n / 2) + O(1)$ & $O(logn)$ & Height of logn, 1 each 'level'\\
+        \midrule
+        $T(n) = 2T(n / 2) + O(1)$ & $O(n)$ & 1, 2, 4, ... n: Sum of GP\\
+        \midrule
+        $T(n) = T(n / 2) + O(n)$ & $O(n)$ & n, n/2, n/4 ... 1: Sum of GP\\ 
+        \bottomrule
+    \end{tabular}
+
+    \subsection{AP GP Sums}
+
+    \begin{tabular}{l}
+        \toprule
+        For AP, $S_{n} = \frac{1}{2}n(a_{1} + a_{n})$\\
+        \tabitem If AP is 1, 2,...n, $S_{n} = \frac{n^{2} + n}{2} = O(n^{2})$\\
+        \midrule
+        For GP, $S_{n} = \frac{a(r^{n}-1)}{r-1} = \frac{a(1 - r^{n})}{1- r}$\\
+        \tabitem Sum to $\infty$ $S_{\infty} = \frac{a}{1-r}$\\
+        \tabitem If GP is 1, 2, 4...n, where a = n, $r = 1/2$, $S_{n} = \frac{a}{1-r} = \frac{n}{1-0.5} = O(n)$\\
+    \end{tabular}
+    
     \pagebreak
 
     \section{Trees}
@@ -667,18 +726,20 @@
     \pagebreak
 
     \subsection{AVL Trees}
+
     \begin{tabular}{l}
         \tabitem Every node, store height $h = max(left.height, right.height) + 1$ \\
         \tabitem On insert \& delete, update height\\
-        \tabitem node v is height-balanced if $\bm{|v.left.height – v.right.height| \leq 1}$
+        \tabitem node v is height-balanced if $\bm{|v.left.height - v.right.height| \leq 1}$
         \tabitem Maintains balance using Tree-Rotations
+        \tabitem Max height $\bm{h < 2logn}$, $\bm{n > 2^{h/2}}$
     \end{tabular}
 
     \subsubsection{Rotations}
 
     \begin{tabular}{l}
-        \tabitem A is LEFT-heavy if left.height > right.height\\
-        \tabitem A is RIGHT-heavy if right.height > left.height.\\
+        \tabitem A is LEFT-heavy if left.height $>$ right.height\\
+        \tabitem A is RIGHT-heavy if right.height $>$ left.height.\\
     \end{tabular}
 
     \bigskip
@@ -799,7 +860,7 @@
             else if (k < rank) then
                 return left.select(k);
             else if (k > rank) then
-                return right.select(k–rank);
+                return right.select(k minus rank);
     \end{verbatim}
 
     \begin{verbatim}
@@ -1005,7 +1066,7 @@
     \end{tabular}
 
     \begin{tabular}{l}
-        \tabitem $\therefore$ \textbf{load(hashtable)} = average number of items per bucket $\bm{= 1 + n/m}$\\\\ 
+        \tabitem $\therefore$ \textbf{load(hashtable)} = average number of items per bucket $\bm{= n/m}$\\\\
     \end{tabular}
 
     Therefore, for a Hashtable with chaining under SUHA assumption:\\
@@ -1094,21 +1155,320 @@
 
     \emph{Specifically, if g(k) is relatively prime to m, then h(k, i) hits all buckets}
 
-    \subsubsection{Resizing}
+    \pagebreak
 
+    \subsubsection{Performance of Open Addressing}
+    \noindent\begin{tabular}{l}
+        \textbf{Expected Cost = First Probe + P(collision on first probe) * Expected Cost of remaining probes}\\
+        \tabitem $= 1 + (n/m)(...)$\\
+        \tabitem $= 1 + (n/m)(1 + [n-1/m-1][...])$\\
+        \tabitem $\leq 1 + \alpha(1 + \alpha(...))$\\
+        \tabitem $\leq 1 + \alpha + \alpha^{2} + \alpha^{3} + ...$\\
+        \tabitem $\leq \frac{1}{1 - \alpha}$\\\\
+    \end{tabular}
+
+    \noindent\begin{tabular}{l}
+        \textbf{Advantages}\\
+        \tabitem Saves space\\
+        \tabitem Rarely Allocate Memory\\
+        \tabitem Better Cache performance\\
+        \textbf{Disadvantages}\\
+        \tabitem More sensitive to choice of hash functions\\
+        \tabitem More sensitive to load (as $\alpha \rightarrow 1$)
+    \end{tabular}
+
+    \subsection{Resizing}
+
+    \noindent\begin{tabular}{l}
+        Assume\\
+        \tabitem Hashing with Chaining\\
+        \tabitem SUHA\\
+        \textbf{Expected Search Time:} $O(1 + n/m)$\\
+        \textbf{Optimal Size:} $m = O(n)$\\\\
+    \end{tabular}
+
+    If m too big ($> 10n$), too much wasted space; if m too small ($< 2n$), too many collisions\\
     
+    \noindent\begin{tabular}{l}
+        \textbf{To expand hashtable:}, let $m_{1} and m_{2}$ be old and new hashtable size\\
+        \tabitem Scan old hash table: $O(m_{1})$, Initialise new table: $O(m_{2})$\\
+        \tabitem Insert each element in new hashtable: $O(1) * n$\\
+        \tabitem \textbf{Total: } $\bm{O(m_{1} + m_{2} + n)}$\\
+        \tabitem If double table size, $(n == m), m = 2m$: $O(n)$ time\\\\
+    \end{tabular}
+
+    \noindent\begin{tabular}{l}
+        \textbf{To shrink hashtable:}, let $m_{1} and m_{2}$ be old and new hashtable size\\
+        \tabitem Cannot be same ratio as insert, cos there will be a point where deleting/inserting 1 shrinks/expands the table\\
+        If insert doubles the table, then for delete:\\
+        \tabitem If $(n < m/4), m = m/2$\\\\
+    \end{tabular}
+
+    \noindent\begin{tabular}{l}
+        \textbf{Costs of operations:}\\
+        \tabitem Inserting k elements costs $O(k)$\\
+        \tabitem $\therefore$ Insert operation: \textbf{Amortized }$\bm{O(1)}$\\
+        \tabitem Search operation: \textbf{Expected }$\bm{O(1)}$\\\\
+    \end{tabular}
+
+    \pagebreak
+
+    \section{Sets}
+
+    insert(Key k), contains(Key k), delete(Key k), intersect(Set<Key> s), union(Set<Key> s)
+
+    \subsection{Implementation using Hashtable}
+
+    Takes more space to keep the entire key (to resolve collisions) in the table.
+
+    \subsection{Fingerprint Hashtable}
+
+    \noindent\begin{tabular}{l}
+        Stores bits (0 and 1) instead of the key, 0 if not present, 1 if present. No key stored in the table.\\
+        \tabitem \textbf{Collisions possible}\\
+        \tabitem Lookup operation: If key is \textbf{in}, will always report true (\textbf{No False Negatives})\\
+        \tabitem Due to collisions, even in key not in set, may sometimes report true (\textbf{False Positives})\\
+        Thus choosing what to store is important, based on objectives\\
+    \end{tabular}
+
+    \subsubsection{Table Size vs P(False Positives)}
+
+    \begin{tabular}{l}
+        On a lookup of n elements of table of size m,\\
+        \tabitem P(No false positive) = $(1 - 1/m)^{n} \approx (1/e)^{n/m}$\\
+        \tabitem P(False positive) = $1 - (1/e)^{n/m}$\\\\
+        Assuming we want P(false positive) at most p:\\s
+        \tabitem $n/m \leq log(\frac{1}{1-p})$\\
+        So we reduced space to 1 bit per slot, but need a bigger table to avoid collisions\\\\
+    \end{tabular}
+    
+    \subsection{Bloom Filter}
+
+    \begin{tabular}{l}
+        Fingerprint Hashtable, but 2 hash function to \textbf{store 1 in 2 different slots}.\\
+        \tabitem Lookup: Check if both slots are 1\\
+        \tabitem Still,\textbf{No False Negatives} and possible \textbf{False Positives}\\
+        Requires 2 collisions to be a false positive, but each item take more space.\\\\
+        Assuming we want P(false positive) at most p:\\
+        \tabitem $n/m \leq \frac{1}{2}log(\frac{1}{1-p^{1/2}})$\\\\
+        Deleting elements? Consider a counter instead of 1 bit in each slot:\\
+        \tabitem On insert, counter++\\
+        \tabitem On delete, counter--\\
+        If counter gets too big, no space saving: Thus need to make collisions rare\\\\
+        Implementing Set functions:\\
+        \tabitem Insert, delete, query: $O(k)$\\
+        \tabitem Intersection, Bitwise AND 2 bloom filters: $O(m)$\\
+        tabitem Union, Bitwise OR 2 bloom filters: $O(m)$\\
+    \end{tabular}
 
     \pagebreak
 
     \section{Other Data Structures}
 
-    \subsection{B-trees}
+    \subsection{(a, b)-trees and B-trees}
 
-    \subsection{ab-trees}
+    \begin{tabular}{l}
+        \toprule
+        \textbf{a, b refer to min and (max + 1) no. of children in node, where }$\bm{2 \leq a \leq (b+1)/2}$\\
+        \midrule
+        Non-leaf node must have one more child than its number of keys, its \textbf{key range:}\\
+        \tabitem Keys in sorted order, $v_{1}, v_{2},...v_{k}$\\
+        \tabitem First child has key range $\leq v_{1}$\\
+        \tabitem Final child has key range $> v_{k}$\\
+        \tabitem All other children $c_{i}$, where $i \in [2, k]$ have key range $(v_{i-1}, v_{i}]$\\
+        \midrule
+        All leaf nodes must be same depth\\
+        \midrule
+        \textbf{Insert:} split node if contain b-1 keys (Node too big)\\
+        \midrule
+        \textbf{Delete:} if deleting make node too small, merge siblings y,z if have total nodes $\leq b-1$, \\
+        else share by merging and splitting\\
+        \bottomrule\\
+    \end{tabular}
+
+    \noindent\textbf{B-trees} are (a, b)-trees such that $a = B$, $b = 2B$
+
+    \begin{figure}[htbp]
+        \begin{center}
+        \includegraphics[width=5in,keepaspectratio]{Btree.JPG}
+        \caption{B-tree, where B = 2}
+        \end{center}
+    \end{figure}
 
     \subsection{Skip Lists}
 
     \subsection{Merkle Trees}
+
+    \pagebreak
+
+    \section{Graphs}
+
+    \begin{tabular}{l}
+        Consists of at least 1 node, and unique edges that connect 2 nodes\\
+        \textbf{Hypergraph}: Eaah unique edge connect $\geq 2$ nodes\\
+        \textbf{Multigraph}: Each node connected by more than 1 edge\\
+        Degree of node: Number of adjacent edges\\
+        Degree of graph: max(degree of nodes)\\
+        Diameter: Max distance between 2 nodes, following shortest path\\
+        \textbf{Bipartite graph}: Nodes divided to 2 sets, no edges between same set\\
+    \end{tabular}
+
+    \subsection{Adjacency list}
+
+    \begin{tabular}{l}
+        Nodes stored in an array, Edges stored as linked list per node\\\\
+        \textbf{Memory Usage: }$\bm{O(V + E)}$, since of array V and size of linked lists E\\\\
+        Are v and w neighbours? \textbf{Fast query}\\
+        Find any neighbour of v: \textbf{Slow query}\\
+        Enumerate all neighbours: \textbf{Slow query}\\
+    \end{tabular}
+
+    \subsection{Adjacency Matrix}
+
+    \begin{tabular}{l}
+        Edges seen as pairs of nodes. For a graph with n nodes, nxn array:\\
+        At A[i][j], 1 if i and j are directly connected\\
+        $A^{n}$: Length of n paths\\\\
+        \textbf{Memory Usage:} $\bm{O(V^{2})}$\\\\
+        Are v and w neighbours? \textbf{Slow query}\\
+        Find any neighbour of v: \textbf{Fast query}\\
+        Enumerate all neighbours: \textbf{Fast query}\\\\
+    \end{tabular}
+
+    \noindent\textbf{Generally, if graph is dense, use an adjacency matrix, if not then adjacency list}
+
+    \pagebreak
+    
+    \section{Graph Traversal}
+
+    Start at vertex s, ends at vertex t, or visit all nodes in the graph. (Assume adjacency list)
+    
+
+    \subsection{Breadth-First Search}
+
+    \begin{tabular}{l}
+        \tabitem \textbf{Finds shortest paths}\\
+        \tabitem Skip already visited nodes, calculate level[i] from level[i-1]\\
+    \end{tabular}
+
+    \begin{verbatim}
+    //Or can use a Queue to pop the earlier ones first
+    BFS(Node[] nodeList) {
+        boolean[] visited = new boolean[nodeList.length];
+        Arrays.fill(visited, false);
+
+        int[] parent = new int[nodelist.length];
+        Arrays.fill(parent, -1);
+
+        // To make sure you visit all components 
+        for (int start = 0; start < nodeList.length; start++) {
+            if (!visited[start]){
+                Bag<Integer> frontier = new Bag<Integer>;
+                frontier.add(startId);
+
+                // Main code
+                while (!frontier.isEmpty()){
+                    Collection<Integer> nextFrontier = new … ;
+                    for (Integer v : frontier) {
+                        for (Integer w : nodeList[v].nbrList) {
+                            if (!visited[w]) {
+                                visited[w] = true;
+                                parent[w] = v;
+                                nextFrontier.add(w);
+                            }
+                        }
+                    }
+                    frontier = nextFrontier;
+                }
+            }
+        }
+    }
+    \end{verbatim}
+
+    \begin{tabular}{l}
+        \textbf{Running Time:} $\bm{O(V + E)}$ assuming adjacency list\\
+        \tabitem Every vertex v = start once, and added to nextFrontier once \\
+        (After visited, never re-added: $O(V)$)\\
+        \tabitem Each v.nbrList enumerated once: $O(E)$\\\\
+        Shortest path is a tree - Parent pointers store shortest path   
+    \end{tabular}
+
+    \pagebreak
+
+    \subsection{Depth-first search}
+
+
+
+    \pagebreak
+
+    \section{Data Structures Summary}
+
+    \subsection{Trees}
+
+    \noindent\begin{tabular}{|l|l|l|l|p{5cm}|}
+        \toprule
+        \textbf{Name} & \textbf{Search} & \textbf{Insert} & \textbf{Delete} & \textbf{Remarks}\\
+        \midrule
+        \midrule
+        \textbf{BST} & $O(height)$ & $O(height)$ & $O(height)$ & $h < 2log(n)$\\
+        \midrule
+        \textbf{AVL} & $O(logn)$ & $O(logn) +$ 2 rotations & $O(logn)$ + logn rotations & If v is left-heavy,\\
+        &&&&- v.left is balanced/left-heavy: right-rotate(v)\\
+        &&&&- v.left is right-heavy: left-rotate(v.left), right-rotate(v)\\
+        \midrule
+        \textbf{Trie} & $O(length)$ & $O(length)$& $O(length)$ &\\
+        \midrule
+        \textbf{(a,b)-trees} & $O(logn)$ & $O(logn)$ & $O(logn)$ & Insert: split\\
+        \textbf{B-trees} &&&& Delete: Merge, or Share (merge + split)\\
+        \bottomrule
+    \end{tabular}
+
+    \subsection{Augmented Trees}
+
+    Assuming augmented from AVL, search(), insert() and delete() are $O(logn)$\\
+
+    \noindent\begin{tabular}{|l|l|}
+        \toprule
+        \textbf{Order Statistics} & \textbf{Find order/rank of nodes}\\
+        & \tabitem Store size of sub-tree in every node\\
+        & \tabitem During insertion, maintain weight during rotation\\
+        \midrule
+        \textbf{Interval Tree} & Nodes sorted by left endpoint\\
+        & Nodes contain max endpoint in tree rooted at node\\
+        \midrule 
+        \textbf{Orthogonal Range Searching} & \textbf{Find everything within certain range}\\
+        (kd-trees) & \tabitem Points stored in leaves\\
+        & \tabitem internal node stores max(node.left)\\
+        & \tabitem kd-trees: Alterate splitting between dimensions:\\
+        & \tabitem Query: $O(\sqrt{n} + k)$, Space: $O(n)$, Build: $O(nlogn)$\\
+        \midrule
+        \textbf{Range Tree} & \textbf{Build x-tree using only x-coords, x-node contains y-tree (etc)}\\
+        & \tabitem Query: $O(log^{2}n + k)$, Space: $O(nlogn)$, Build: $O(nlogn)$\\
+        \bottomrule 
+    \end{tabular}
+
+    \subsection{Hashing}
+
+    Assuming m is number of buckets, n is number of keys, h is cost of hash function,\\
+
+    \noindent\begin{tabular}{|l|l|l|l|p{6.5cm}|}
+        \toprule
+        \textbf{Name} & \textbf{Search} & \textbf{Insert} & \textbf{Space} & \textbf{Remarks}\\
+        \midrule
+        \midrule
+        \textbf{Chaining} & $O(h + n/m)$ & $O(h + 1)$ & $O(m+n)$ & \tabitem Simple Uniform Hashing Assumption\\
+        & $= O(1)$ (Expected) &&&\tabitem load $= n/m$ \\
+        & $= O(n)$ (Worst-case) &&&\\
+        \midrule
+        \textbf{Open-Addressing} &$O(1)$&$1/(1-load)$& $O(n)$ &\tabitem Uniform Hashing Assumption\\
+        &&&&\tabitem Redefine hash function: Linear Probing or otherwise\\
+        &&&&\tabitem Double-hashing:\\
+        &&&& $h(k, i) = [f(k) + ig(k)]$ $mod$ m\\
+        &&&&\tabitem Tombstone value for deleted items\\
+        &&&&\tabitem Performance degrades as load $= n/m$ tends to 1\\
+        \bottomrule
+    \end{tabular}
+
 
     
 
