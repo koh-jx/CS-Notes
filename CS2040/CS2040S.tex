@@ -94,13 +94,15 @@
     \end{itemize}
 
 
-    \subsection{Trees}
+    \subsection{Trees and Graphs}
 
     \begin{tabular}{ll}
         \textbf{Successor} & Next largest value in the tree.\\
         \textbf{Height} & Number of edges on longest path from root to leaf.\\
         & \tabitem $h(v) = 0$ if v is a leaf\\
-        & \tabitem $h(v) = max(h(v.left), h(v.right)) + 1$\\
+        & \tabitem $h(v) = max(h(v.left), h(v.right)) + 1$\\\\
+        \textbf{Cut} of a graph is a partition of vertices into 2 disjoint subsets\\
+        An edge crosses a cut if it has one vertex in each of the 2 sets\\
     \end{tabular}
 
     
@@ -730,8 +732,8 @@
     \begin{tabular}{l}
         \tabitem Every node, store height $h = max(left.height, right.height) + 1$ \\
         \tabitem On insert \& delete, update height\\
-        \tabitem node v is height-balanced if $\bm{|v.left.height - v.right.height| \leq 1}$
-        \tabitem Maintains balance using Tree-Rotations
+        \tabitem node v is height-balanced if $\bm{|v.left.height - v.right.height| \leq 1}$\\
+        \tabitem Maintains balance using Tree-Rotations\\
         \tabitem Max height $\bm{h < 2logn}$, $\bm{n > 2^{h/2}}$
     \end{tabular}
 
@@ -1347,12 +1349,13 @@
     \subsection{Breadth-First Search}
 
     \begin{tabular}{l}
-        \tabitem \textbf{Finds shortest paths}\\
+        \tabitem \textbf{Finds shortest path}\\
         \tabitem Skip already visited nodes, calculate level[i] from level[i-1]\\
     \end{tabular}
 
     \begin{verbatim}
-    //Or can use a Queue to pop the earlier ones first
+    //Or can use a QUEUE to pop the earlier ones first
+
     BFS(Node[] nodeList) {
         boolean[] visited = new boolean[nodeList.length];
         Arrays.fill(visited, false);
@@ -1386,17 +1389,822 @@
     \end{verbatim}
 
     \begin{tabular}{l}
-        \textbf{Running Time:} $\bm{O(V + E)}$ assuming adjacency list\\
+        \textbf{Running Time:} $\bm{O(V + E)}$\\
         \tabitem Every vertex v = start once, and added to nextFrontier once \\
         (After visited, never re-added: $O(V)$)\\
         \tabitem Each v.nbrList enumerated once: $O(E)$\\\\
-        Shortest path is a tree - Parent pointers store shortest path   
+        Shortest path is a tree - Parent pointers store shortest path\\\\
+        \textbf{Does NOT explore every path in the graph!!!}\\ 
     \end{tabular}
 
     \pagebreak
 
     \subsection{Depth-first search}
 
+    \begin{tabular}{l}
+        \tabitem Follow path until end, backtrack until find new edge, recursively explore
+        \tabitem Skip already visited nodes
+    \end{tabular}
+
+    \begin{verbatim}
+        // Iterative method would be to use a STACK
+
+        DFS(Node[] nodeList){
+            boolean[] visited = new boolean[nodeList.length];
+            Arrays.fill(visited, false);
+
+            for (start = i; start<nodeList.length; start++) {
+                if (!visited[start]){
+                    visited[start] = true;
+                    DFS-visit(nodeList, visited, start);
+                }
+            }
+        }
+
+        DFS-visit(Node[] nodeList, boolean[] visited, int startId){
+            for (Integer v : nodeList[startId].nbrList) {
+                if (!visited[v]){
+                    visited[v] = true;
+                    DFS-visit(nodeList, visited, v);
+                }
+            }
+        }
+    \end{verbatim}
+
+    \begin{tabular}{l}
+        \textbf{Running Time:} $\bm{O(V + E)}$\\
+        \tabitem Each node is visited only once: $O(V)$\\
+        \tabitem For every node, each neighbour is enumerated: $O(E)$\\\\
+        Running time for adjacency matrix: $O(V^{2})$, calls once per node at O(V), enumerates neighbours at O(V)\\\\
+    \end{tabular}
+
+    \subsection{Problems with BFS and DFS}
+
+    \begin{itemize}
+        \item Do not visit every path in the graph
+        \item Too expensive for graphs with exponential number of paths
+    \end{itemize}
+
+    \pagebreak
+
+    \subsection{Directed Graphs}
+
+    \begin{tabular}{l}
+        \textbf{In-degree}: Number of incoming edges\\
+        \textbf{Out-degree}: Number of outgoing edges\\\\
+        \textbf{Memory Usage in Adjacency List: }$\bm{O(V + E)}$, where ll stores outgoing edges\\
+        \textbf{Memory Usage in Adjacency Matrix:} $\bm{O(V^{2})}$, where A[v, w] represent edge from v to w\\\\
+        Are v and w neighbours? \textbf{Slow query}\\
+        Find any neighbour of v: \textbf{Fast query}\\
+        Enumerate all neighbours: \textbf{Fast query}\\\\
+    \end{tabular}
+
+    \subsection{Topological Ordering}
+
+    \begin{tabular}{l}
+        Sequential total ordering of all nodes, edges only point forward.\\
+        Use \textbf{post-order} DFS: Process node when it is last visited\\
+        Topological Ordering is NOT unique\\
+        \textbf{Time Complexity: }$O(V+E)$\\
+    \end{tabular}
+
+    \begin{verbatim}
+        DFS(Node[] nodeList){
+            boolean[] visited = new boolean[nodeList.length];
+            Arrays.fill(visited, false);
+            for (start = i; start<nodeList.length; start++) {
+                if (!visited[start]){
+                    visited[start] = true;
+                    DFS-visit(nodeList, visited, start);
+                    schedule.prepend(v);
+                }
+            }
+        }
+    \end{verbatim}
+
+    \begin{tabular}{l}
+        Alternatively, \textbf{Kahn's Algorithm}\\
+        Repeat:\\
+        \tabitem S = nodes in G that have no incoming edges.\\
+        \tabitem Add nodes in S to the topo-order\\
+        \tabitem Remove all edges adjacent to nodes in S\\
+        \tabitem Remove nodes in S from the graph\\
+        \textbf{Time Complexity: }$O(V+E)$, or $O(ElogV)$ using a PQ\\
+    \end{tabular}
+
+    \subsection{Shortest Path in a Directed Acyclic Graph}
+
+    \begin{tabular}{l}
+        Relax the edges in the right-order: Relax each edge once, $O(E)$ cost for relaxation step\\
+        DFS post-order, find in topological order\\\\
+        Running time of Shortest Path on a DAG: $O(E)$\\
+        \textbf{Longest Path: Shorted path in negated graph or Modify relax function}\\\\
+        Longest path in a general cyclic graph is NP hard\\
+    \end{tabular}
+
+    \subsection{Shortest path in a tree}
+
+    \begin{tabular}{l}
+        From source to destination, only 1 possible path.\\
+        From source to all? \textbf{BFS or DFS order}\\\\
+        Running time: $O(V)$, assuming weighted undirected tree\\
+        $\because$ there are only O(V) edges in the tree.
+    \end{tabular}
+
+
+    \pagebreak
+
+    \subsection{Single-Source Shortest Paths of Weighted directed Graphs}
+
+    \begin{tabular}{l}
+        Cannot use BFS: BFS finds minimum hops from node to node, not minimum distance (of weighted edges)\\
+        \textbf{Triangle Inequality:} $\bm{\delta(S, C) \leq \delta(S, A) + \delta(A, C)}$\\
+        Mantain estimate for each distance, reduce estimate if a lower value is found by \textbf{relaxing edges}.\\
+        \textbf{Invariant:} estimate $\leq$ distance\\
+    \end{tabular}
+
+    \subsubsection{Bellman-Ford}
+
+    Simple, general way to find SSSP
+
+    \begin{verbatim}
+        int[] dist = new int[V.length];
+        Arrays.fill(dist, INFTY);
+        dist[start] = 0;
+
+        // Bellman-Ford:
+        // Relax every edge |V| times, stop when converges
+        n = V.length;
+        for (i=0; i<n; i++)
+            for (Edge e : graph)
+                relax(e)
+
+        // Not stated here, but can terminate early
+        // once an entire sequence of E relax operations have no effect
+        // (ie when one inner for-loop doesn't change anything)
+
+        relax(int u, int v){
+            if (dist[v] > dist[u] + weight(u,v))
+                dist[v] = dist[u] + weight(u,v);
+        }       
+    \end{verbatim}
+
+    \begin{tabular}{l}
+        \textbf{Running Time:} $O(EV)$\\
+        $\because$ Outer for-loop is $O(V)$, inner is $O(E)$\\\\
+        Negative Weight: Possibility of \textbf{Negative Weight Cycles}\\
+        \tabitem To detect: \textbf{Run Bellman-Ford for }$|V| + 1$ \textbf{iterations}\\\\
+        If all edges have same weight: Use regular BFS (Distance no different from hops)\\
+    \end{tabular} 
+
+    \pagebreak
+
+    \subsubsection{Dijkstra}
+
+    
+    \begin{tabular}{l}
+        Faster, \textbf{only non-negative weights}, takes edge from vertex closest to source.\\
+        1) Maintain distance estimate for every node.\\
+        2) Begin with empty shortest-path-tree\\
+        3) Repeat: \\
+        \tabitem Consider vertex with minimum estimate\\
+        \tabitem Add vertex to shortest-path-tree\\
+        \tabitem Relax all outgoing edges\\
+        Use of \textbf{Priority Queue via AVL Tree}\\
+        \textbf{Every finished vertex has a good estimate; Initially, only start is finished}\\
+        \textbf{This does NOT hold with negative edge weights}\\
+    \end{tabular}
+
+    \begin{verbatim}
+        public Dijkstra{
+            private Graph G;
+            private IPriorityQueue pq = new PriQueue();
+            private double[] distTo;
+
+            searchPath(int start) {
+                pq.insert(start, 0.0);
+                distTo = new double[G.size()];
+                Arrays.fill(distTo, INFTY);
+                distTo[start] = 0;
+                while (!pq.isEmpty()) {
+                    int w = pq.deleteMin();
+                    for (Edge e : G[w].nbrList)
+                        relax(e);
+                }
+            }
+
+            // Relax now decreases key in priority queue if needed
+            relax(Edge e) {
+                int v = e.from();
+                int w = e.to();
+                double weight = e.weight();
+                if (distTo[w] > distTo[v] + weight) {
+                    distTo[w] = distTo[v] + weight;
+                    parent[w] = v;
+                    if (pq.contains(w)) pq.decreaseKey(w, distTo[w]);
+                    else pq.insert(w, distTo[w]);
+                }
+            }
+        }
+    \end{verbatim}
+        
+    \begin{tabular}{l}
+        Assuming AVL Tree priority queue:\\
+        \tabitem insert/push, deleteMin/pop, decreaseKey: $O(n)$\\
+        \tabitem contains: $O(1)$\\
+        insert/deleteMin: $|V|$ times each, since each node added to PQ only once\\
+        relax/decreaseKey: $|E|$ times, since each edge is relaxed once\\\\
+        $\therefore$\textbf{ Running time: }$\bm{O((V+E)logV) = O(ElogV)}$\\
+        (Running time with array and heap: $O(V^{2})$ and $O(ElogV)$)\\\\
+        \textbf{Source-to-Destination Djisktra: }\\
+        Can choose to terminate once destination is dequeued, since it is a good estimate\\
+    \end{tabular}
+
+    \section{Heaps}
+
+    \begin{tabular}{l}
+        Maintain set of prioritized object\\
+        \tabitem used for stuff like PQ: insert, extractMax, increase/decreaseKey, delete\\
+        \tabitem Unlike AVL, no rotations\\\\
+        \textbf{2 Properties: }\\
+        \tabitem \textbf{Heap Ordering}: priority[parent] $\geq$ priority[child]\\
+        \tabitem \textbf{Complete Binary Tree}, nodes as far left as possible\\\\
+        Biggest items stored at root, smallest at leaves\\
+        Maximum Height: \textbf{floor(logn)} $\bm{= O(logn)}$\\
+    \end{tabular}
+
+    \subsection{PQ Operations}
+
+    \begin{tabular}{ll}
+        insert & Insert priority p as leaf, bubble up by swapping with parent until parent's priority larger than p.\\
+        increaseKey & Update priority, bubbleUp until parent's priority larger than new priority\\
+        decreaseKey & Update priority, bubbleDown (leftwards)\\
+        delete & \tabitem Swap node with last() (most right value rooted at node)\\
+        & \tabitem remove last()\\
+        & \tabitem bubbledown original last() from prev node's position.\\
+        extractMax & delete(root), return original root\\
+    \end{tabular}
+    \begin{tabular}{l}
+        \textbf{Heap Operations are O(logn)}\\
+    \end{tabular}
+
+    \begin{verbatim}
+        bubbleUp(Node v) {
+            while (v != null) {
+            if (priority(v) > priority(parent(v)))
+                swap(v, parent(v));
+            else return;
+            v = parent(v);
+            }
+        }
+
+        bubbleDown(Node v) {}
+            while (!leaf(v)) {
+                leftP = priority(left(v));
+                rightP = priority(right(v));
+                maxP = max(leftP, rightP, priority(v));
+                if (leftP == max) {
+                    swap(v, left(v));
+                    v = left(v); 
+                }
+                else if (rightP == max) {
+                    swap(v, right(v));
+                    v = right(v); 
+                }
+                else return;
+            }
+        }
+            
+        insert(Priority p, Key k) {
+            Node v = completeTree.insert(p,k);
+            bubbleUp(v);
+        }
+    \end{verbatim}
+
+    \pagebreak
+    
+    \subsection{Store heap as array}
+
+    Map each node in complete binary tree into a slot in an array, breadth-first.
+
+    \begin{tabular}{ll}
+        insert & Append to end of the array\\
+        left(x) & arr[2x + 1]\\
+        right(x) & arr[2x + 2]\\
+        parent(x) & floor((x - 1)/2)\\
+    \end{tabular}
+
+    \subsubsection{HeapSort: Heap array to Sorted List}
+
+    \begin{tabular}{l}
+        extractMax() n times, everything shifted to the front of the array, append max to end.\\
+        \textbf{Time Complexity:} $\bm{O(nlogn)}$\\
+    \end{tabular}
+
+    \begin{verbatim}
+        // int[] A = array stored as a heap
+        for (int i=(n-1); i>=0; i--) {
+            int value = extractMax(A); // O(log n)
+            A[i] = value;
+        }
+    \end{verbatim}
+
+    \subsubsection{Unsorted list to heap}
+
+    Recurse from leaves up: Left and right childs are heaps, bubble up accordingly if not.
+
+    \begin{verbatim}
+        // int[] A = array of unsorted integers
+        for (int i=(n-1); i>=0; i--) {
+            bubbleDown(i, A); // O(height) = O(log n)
+        }
+    \end{verbatim}
+
+    \begin{tabular}{l}
+        Note that ceil(n/2) nodes are height = 0, ceil(n/4) height = 1, ... , 1 root\\
+        $\therefore$ \textbf{Total cost of building heap = }$\bm{\sum_{0}^{logn}\frac{n}{2^{h}}O(h)}$,\\
+        where $2^{h}$ is upper bound of nodes at level h, O(h) cost of bubbling down node at level h,\\
+        $\leq cn(\frac{0.5}{(1-0.5)^{2}})$\\
+        $\bm{\leq 2O(n)}$\\
+    \end{tabular}
+
+    \subsubsection{HeapSort summary}
+
+    \begin{tabular}{l}
+        Unsorted List $\rightarrow$ Heap array in O(n) $\rightarrow$ Sorted list in O(nlogn)\\
+        O(nlogn) worst-case\\
+        In-place; n space needed\\
+        \textbf{Always completes in O(nlogn)}\\
+    \end{tabular}
+
+    \pagebreak
+
+    \section{Union Find}
+    \begin{tabular}{l}
+        Given set(s) of objects,\\
+        \tabitem Union - Connect two sets\\
+        \tabitem Find - Are two objects in the same set?\\\\
+        Transivity: If p connected to q and q connected to r, p connected to r\\
+    \end{tabular}
+
+    \subsection{Quick-find}
+    \begin{tabular}{l}
+        Keep array of componentIDs\\\\
+        \textbf{Find:} 2 objects are connected if they have the same component identifier, \textbf{O(1) time}\\
+        \tabitem If objects not integers, can use hashtable + open addressing to map items to integers instead.\\\\
+        \textbf{Union:} Replace one of the IDs with the other ID, \textbf{O(n) time}\\
+    \end{tabular}
+
+    \begin{verbatim}
+        find(int p, int q):
+            return(componentId[p] == componentId[q]);
+
+        union(int p, int q):
+            updateComponent = componentId[q]
+            for (int i=0; i<componentId.length; i++)
+                if (componentId[i] == updateComponent)
+                    componentId[i] = componentId[p];
+    \end{verbatim}
+
+    \subsection{Quick-Union}
+
+    \begin{tabular}{l}
+        Keep array of direct 'parent' of node\\\\
+        \textbf{Find:} 2 objects are connected if they are part of the same tree, \textbf{O(n) time}\\
+        \tabitem If objects not integers, can use hashtable + open addressing to map items to integers instead.\\\\
+        \textbf{Union:} Attach root of one tree to the other tree, \textbf{O(n) time}\\
+    \end{tabular}
+
+    \begin{verbatim}
+        find(int p, int q)
+            while (parent[p] != p) p = parent[p];
+            while (parent[q] != q) q = parent[q];
+            return (p == q);
+
+        union(int p, int q)
+            while (parent[p] != p) p = parent[p];
+            while (parent[q] != q) q= parent[q];
+            parent[p] = q;
+    \end{verbatim}
+
+    \pagebreak
+
+    \subsection{Weighted-Union}
+
+    \begin{tabular}{l}
+        Connect the smaller tree to the bigger tree; Maximum depth of tree: \textbf{O(logn)}\\\\
+        Everytime a tree T of size t is linked to a tree of size t+1, total size > 2size(T)\\
+        Whenever this happens, \textbf{depth of nodes in T increases by 1, since root of T linked to root of larger tree.}\\
+        Max number of times size can double is up till size = n = $2^{logn}$; \textbf{Size doubles logn times}\\
+        \textbf{Hence largest depth possible for a node in T is log(n)}\\
+        $\therefore $\textbf{Running time of Find and Union: O(logn)}\\
+    \end{tabular}
+
+    \begin{verbatim}
+        union(int p, int q)
+            while (parent[p] !=p) p = parent[p];
+            while (parent[q] !=q) q = parent[q];
+            
+            if (size[p] > size[q] {
+                parent[q] = p; // Link q to p
+                size[p] = size[p] + size[q];
+            } else {
+                parent[p] = q; // Link p to q
+                size[q] = size[p] + size[q];
+            }
+    \end{verbatim}
+
+    \subsection{Path Compression}
+
+    \begin{tabular}{l}
+        After finding the root: Set the parent of each traversed node as the root itself.\\
+        \textbf{Time Complexity:} \\
+        - \textbf{Weighted Union with Path Compression:} \\
+        \tabitem Sequence of m union/find on n objects: $O(n + m\alpha(m,n))$\\
+        \tabitem 1 Find/Union operation $\alpha(m,n)$\\
+        - \textbf{Path Compression:} Find/Union O(logn)\\
+    \end{tabular}   
+    
+    \begin{verbatim}
+        // PREVIOUS root finding
+        findRoot(int p):
+            root = p;
+            while (parent[root] != root) root = parent[root];
+            return root;
+
+        // Root finding with Path Compression
+        findRoot(int p)
+            root = p;
+            while (parent[root] != root) root = parent[root];
+            while (parent[p] != p):
+                temp = parent[p];
+                parent[p] = root;
+                p = temp;
+            return root;
+
+        // Alternative: Make every OTHER node in path point to its GRANDparent
+        findRoot(int p):
+            root = p;
+            while (parent[root] != root):
+                parent[root] = parent[parent[root]];
+                root = parent[root];
+            return root;
+    \end{verbatim}
+
+    \pagebreak
+
+    \section{Minimum Spanning Trees}
+
+    \begin{tabular}{l}
+        \textbf{Acyclic} subset of edges containing all nodes \textbf{with minimum weight}\\
+        \tabitem MST != Shortest paths\\
+        \tabitem Assume edge weight distinct\\\\
+        \textbf{3 Basic Properties:}\\
+    \end{tabular}
+
+    \noindent\begin{tabular}{ll}
+        \textbf{1.} & \textbf{No cycles}\\\\
+        \textbf{2.} & If you cut an MST, \textbf{2 pieces are MSTs}\\\\
+        \textbf{3.1.} & Cycle Property: For every cycle in the graph, \textbf{MAXIMUM weight edge is NOT in the MST}\\
+        \textbf{3.2.} & False Cycle Property: Minimum weight edge in a cycle may or may not be in a MST\\\\
+        \textbf{4.} & Cut Property: For every partition of nodes, \textbf{MINIMUM weight edge IS in the MST}\\
+        & - Implies \textbf{for every vertex, minimum outgoing edge IS in the MST}\\\\\\
+    \end{tabular}   
+
+    \subsection{Generic MST algorithm}
+
+
+    \noindent\begin{tabular}{ll}
+        \textbf{Red Rule} & If C is a cycle with no red edges, color C's max-weight edge red\\
+        \textbf{Blue Rule} & If D is a cut with no blue edges, color D's min-weight edge blue\\
+    \end{tabular}
+
+    \begin{verbatim}
+        // Greedy Algorithm
+        Repeat: 
+            Apply red or blue rule to an arbitrary edge
+            until no more edges can be coloured
+
+        // On termination, (all) blue edges are an MST
+        // Every cycle has a red edge, no blue cycles
+        // Every edge is coloured
+    \end{verbatim}
+
+    \pagebreak
+
+    \subsection{Prim's Algorithm}
+
+    \begin{tabular}{l}
+        S  = set of nodes connected by blue edges\\
+        Initially: $S = {A}$\\
+        Repeat: Identify Cut {S, V-S}, find minimum weight edge of cut, add new node to S\\
+        \textbf{Use of PQ to find lightest edge on cut}\\\\
+        Each edge added is lightest on some cut.\\
+        $\therefore$ By blue rule, each edge added to S is in the MST\\\\
+        \textbf{Assuming use of Binary Heap, running time = } $\bm{O(E log V)}$\\
+        \tabitem $\because$ Each vertex added/removed to/from PQ: O(V log V)\\
+        \tabitem Each edge: one decreaseKey, O(E log V), and E is at most $V^{2}$\\
+    \end{tabular}
+
+    \begin{verbatim}
+        // Initialize priority queue
+        PriorityQueue pq = new PriorityQueue();
+        for (Node v : G.V()) pq.insert(v, INFTY);
+        pq.decreaseKey(start, 0);
+
+        // Initialize set S
+        HashSet<Node> S = new HashSet<Node>();
+        S.put(start);
+
+        // Initialize parent hash table
+        HashMap<Node,Node> parent = new HashMap<Node,Node>();
+        parent.put(start, null);
+
+        while (!pq.isEmpty()):
+            Node v = pq.deleteMin();                    // Pop node
+            S.put(v);                                   // Add node to MST
+            for each (Edge e : v.edgeList()):           // Iterate through its edges
+                Node w = e.otherNode(v);
+                if (!S.get(w)):
+                    // Assume decreaseKey here does nothing if newWeight > prevWeight
+                    pq.decreaseKey(w, e.getWeight());   
+                    parent.put(w, v);                   // Keep parent to check the edge
+    \end{verbatim}
+
+    \pagebreak
+
+    \subsection{Kruskal's Algorithm}
+
+    \begin{tabular}{l}
+        Sort all edges by weight\\
+        Consider edges in ascending order:\\
+        \tabitem If both endpoints are in blue tree, colour edge red, heaviest edge in cycle\\
+        \tabitem Else, colour edge blue\\
+        \textbf{Use of Union-find DS} (Connect two nodes if in same blue=tree)\\\\
+        Each added edge crosses a cut. Since sorted, edge is lightest across the cut\\
+        All other lighter cuts have already been considered\\\\
+        \textbf{Running time = } $\bm{O(E log V)}$\\
+        \tabitem $\because$ Sorting: O(E log E) = O(E log V) since E is at most $V^{2}$\\
+        \tabitem Union Find operations are O(logV) or O($\alpha$(n)) for E edges
+    \end{tabular}
+
+    \begin{verbatim}
+        // Sort edges and initialize
+        Edge[] sortedEdges = sort(G.E());
+        ArrayList<Edge> mstEdges = new ArrayList<Edge>();
+        UnionFind uf = new UnionFind(G.V());
+
+        // Iterate through all the edges, in order
+        for (int i=0; i<sortedEdges.length; i++):
+            Edge e = sortedEdges[i];                // get edge
+            Node v = e.one();                       // get node endpoints
+            Node w = e.two();
+
+            if (!uf.find(v,w)):                     // Not in the same tree?
+                mstEdges.add(e);                    // save edge
+                uf.union(v,w);                      // combine trees
+    \end{verbatim}
+
+    \pagebreak
+
+    \subsection{Boruvka's Algorithm}
+
+    \begin{tabular}{l}
+        For each node in the graph, create connected component, each node stores component identifier (O(V))\\\\
+        Repeat Boruvka Step: \textbf{O(V+E)} \\
+        1. For each connected component, \textbf{search and add minimum-weight outgoing edge}\\
+        \tabitem DFS or BFS (O(V+E)), check if edge connects two components, remember minimum cost edge of component.\\
+        2. \textbf{Merge selected components}\\
+        \tabitem Compute and update new component ids (O(V)), mark added edges\\\\
+        \textbf{For k connected components, at least k/2 edges added: }\\
+        \tabitem At least k/2 components merged\\
+        \tabitem $\therefore$ \textbf{At most k/2 connected components remain}\\
+        \tabitem $\therefore$ \textbf{At most O(log V) Boruvka steps}\\\\
+
+        From the above, logV steps take O(V+E) each.\\
+        \textbf{Running time} $\bm{= O((E+V)logV) = O(ElogV)}$\\\\
+
+        \textbf{Advantage: }Each connected component can perform a Boruvka step mostly independently, except merging\\
+    \end{tabular}
+
+    \pagebreak
+
+    \subsection{MST Variations}
+
+    \subsubsection{Edges with same weight}
+
+    \begin{tabular}{l}
+        DFS/BFS, Edge in spanning tree = V-1 = Edges in MST.\\
+        $\therefore$ \textbf{Any spanning tree found with BFS/DFS is an MST}
+    \end{tabular}
+
+    \subsubsection{All edges have a known range}
+    \begin{tabular}{l}
+        \textbf{Kruskal Variation:} O($\alpha$E) time\\
+        Counting Sort using an array of size(range)\\
+        \tabitem Put edges in array of linked lists O(E)\\
+        \tabitem Iterate over all edges in ascending order O(E)\\
+        \tabitem For each edge: Check whether to add an edge O($\alpha$) and union two components if needed O($\alpha$)\\\\
+        \textbf{Prim Variation: }O(V+E) = O(E) time\\
+        Use an array of size 10 as PQ, A[j] holds linked lists of nodes of weight j\\
+        Insertion/removal of nodes: O(V)\\
+        decreaseKey: Move node to new linked list in O(E)\\
+
+    \end{tabular}
+
+    \subsubsection{Directed Acyclic Graphs}
+
+    \begin{tabular}{l}
+        Much harder problem to solve. For special case: DAG with \textbf{Single possible route}:\\
+        \tabitem For every node except the root, add min-weight incoming edge.\\
+        \tabitem $\because$ Every node has at least one incoming edge in the MST, each edge chosen only once, V-1 edges\\
+        \tabitem O(E) time\\
+    \end{tabular}
+
+    \subsubsection{Maximum Spanning Tree, adding k to edge weights}
+
+    \begin{tabular}{l}
+        MST algorithms only care about relative edge weights; nothing changes if multiply edges by k, where $k > 0$, or add/subtract\\
+        MST with negative weights? Doesn't matter, only relative edge weights matter.\\\\
+        \textbf{Maximum Spanning Tree: Negate edge weights, run MST algo}, or run Kruskal's/Prim's in reverse\\
+    \end{tabular}
+
+    \subsubsection{Steiner Tree problem}
+
+    \begin{tabular}{l}
+        Find MST of a subset of the vertices (required nodes), but can use other (Steiner) nodes.\\
+        \textbf{NP-Hard problem}: 2-approx algorithm exits, $T < 2 * Optimal(G)$\\
+        1. For every pair of required vertices, calculate shortest path: Djisktra V times, or any All-Pairs-Shortest-Paths\\
+        2. Construct new graph G on required nodes using edge weights found.\\
+        3. Run MST algo on G; MST found.\\
+        4. Map edges back to original graph.\\
+    \end{tabular}
+
+
+    \pagebreak
+
+    \section{Dynamic Programming}
+
+    \begin{tabular}{l}
+        \textbf{Optimal Sub-structure: }Optimal soln can be constructed from optimal solns to smaller sub-problems\\
+        \textbf{Overlapping Subproblems}\\
+        \tabitem Use of \textbf{memoization} and a 'table' to remember the data\\
+    \end{tabular}
+
+    \subsection{Longest increasing subsequence}
+    \begin{tabular}{l}
+        For Array A[1..n], find longest increasing (not necessarily consecutive) sequence of numbers\\
+        Define sub-problems: S[i] = LIS(A[i..n]) starting at A[i]\\
+        Solve using subproblems: S[n] = 0 and $S[i] = (max_{(i,j) \in E} S[j]) + 1$ (Maximum of traversed nodes)\\
+    \end{tabular}
+
+    \begin{verbatim}
+        LIS(V): // Assume graph is already topo-sorted
+            int[] S = new int[V.length];                    // Create memo array
+            for (i=0; i<V.length; i++) S[i] = 0;            // Initialize array to zero
+            S[n-1] = 1;                                     // Base case: node V[n-1]
+            for (int v = A.length-2; v>=0; v--):
+                int max = 0;                                // Find maximum S for any outgoing edge
+                for (Node w : v.nbrList()):                 // Examine each possible outgoing edge
+                    if (S[w] > max) max = S[w];             // Check S[w], which we already calculated earlier.
+            S[v] = max + 1;                                 // Calculate S[v] from max of outgoing edges.
+    \end{verbatim}
+
+    
+    \begin{tabular}{l}
+        Alternate, similar definition: sub-problem being S[i] = LIS(A[1..i]) \textbf{ending} at A[i]\\
+        Both definitions: $O(n^{2})$ total time (n subproblems, subproblem i takes O(i))\\
+        O(nlogn) using Binary Search to solve faster\\
+    \end{tabular}
+
+    \pagebreak
+
+    \subsection{(Lazy) Prize Collecting}
+
+    \begin{tabular}{l}
+        Graph with negative and positive edge weights; Find path to get as high amount as possible.\\
+        Limit k: What is the maximum prize collected by crossing at MOST k edges in the graph?\\\\
+        \textbf{1. Define Sub-problem:} \\
+        \tabitem P[v, k] = maximum prize that you can collect starting at v and taking EXACTLY k steps.\\
+        \tabitem P[v, 0] = 0 \\
+        \textbf{2. Use sub-problems to solve P[v,k]:}\\
+        \tabitem P[v, k] = MAX { P[w1, k-1] + w(v, w1), P[w2, k-1] + w(v, w2), … }\\
+        \tabitem At every P[v, k] subproblem, save result in a table of v by k.\\
+    \end{tabular}
+
+    \begin{verbatim}
+        int LazyPrizeCollecting(V, E, kMax) {
+            int[][] P = new int[V.length][kMax+1];                     // create memo table P
+            // initialize P to zero
+            for (int i=0; i<V.length; i++) for (int j=0; j<kMax+1; j++) P[i][j] = 0;    
+        
+            for (int k=1; k<kMax+1; k++) {                             // Solve for every value of k
+                for (int v = 0; v<V.length; v++) {                     // For every node…
+                    int max = -INFTY;
+                    for (int w : V[v].nbrList()) {                     // …find max prize in next step
+                        if (P[w,k-1] + E[v,w] > max)
+                        max = P[w,k-1] + E[v,w];
+                    }
+                    P[v, k] = max;
+                }
+            }
+            return maxEntry(P); // returns largest entry in P
+        }
+    \end{verbatim}
+
+
+    \begin{tabular}{l}
+        \tabitem Looks like a O(kVE) problem, but loose bound; don't have to go through all edges.\\
+        \tabitem $O(kV^{2})$ if you take kV subproblems, each costing $|v.nbrList|$ which is maximum V.\\
+        \tabitem $O(kE)$ from table: k rows, O(E) cost to solve each row! (Since you look at each edge once per row)\\
+    \end{tabular}
+
+    \pagebreak
+
+    \subsection{Vertex Cover}
+
+    \begin{tabular}{l}
+        Given undirected, unweighted graph G, find set of nodes C where every edge is adjacent to at least one node in C.\\
+        \tabitem NP-complete, easy \textbf{2-approximation}\\\\
+        \textbf{Special Case:} Given an undirected, unweighted \textbf{tree } and its root r, find size of vertex cover of this tree\\
+        \textbf{Subproblem?} For subtree rooted at v,\\
+        1. S[v, 0]: Size of vertex cover in subtree rooted at v, \textbf{if v is NOT covered}\\
+        \tabitem S[v, 0] = S[w1, 1] + S[w2, 1] + S[w3, 1] + …\\
+        \tabitem Since children HAVE to be already covered\\
+        2. S[v, 1]: Size of vertex cover in subtree rooted at v, \textbf{if v IS covered}\\
+        \tabitem S[v, 1] = 1 + min(S[w1, 0], S[w1, 1]) + min(S[w2, 0], S[w2, 1])\\
+        \tabitem Since doesnt matter whether children are covered or not\\
+    \end{tabular}
+
+    \begin{verbatim}
+        int treeVertexCover(V){//Assume tree is ordered from root-to-leaf
+            int[][] S = new int[V.length][2];   // create memo table S
+
+            for (int v=V.length-1; v>=0; v--){  //From the leaf to the root
+                if (v.childList().size()==0) {  // If v is a leaf…
+                    S[v][0] = 0;
+                    S[v][1] = 1;
+                } else{ // Calculate S from v’s children.
+                    int S[v][0] = 0;
+                    int S[v][1] = 1;
+                    for (int w : V[v].childList()) {
+                        S[v][0] += S[w][1];
+                        S[v][1] += Math.min(S[w][0], S[w][1]);
+                    }
+                }
+            }
+            return Math.min(S[0][0], S[0][1]); // returns min at root
+        }
+    \end{verbatim}
+    
+    \begin{tabular}{l}
+        \tabitem Looks like O$(V^{2})$, since 2V sub-problems, O(V) time per\\
+        \tabitem \textbf{O(V)} time to solve all subproblems, since each of the (V-1) edges is only explored once\\
+    \end{tabular}
+
+    \pagebreak
+
+    \subsection{All-Pairs Shortest Paths}
+
+    \begin{tabular}{l}
+        Given directed, connected weighted graph G, answer queries: Preprocess graph, and answer min-dist(v, w)\\\\
+        Simple Soln: Dijkstra on first query from source v, save all min-dists from v to all other nodes\\
+        \tabitem 0 Preprocessing, O(V E logV) to respond to q queries (Max need run Dijkstra V times)\\
+        \tabitem If run APSP during preprocessing, responding to q queries: O(q)\\
+        ]tabitem In a sparse graph, $O(V^{2}logV)$\\
+        \tabitem in an unweighted graph, use BFS for O(V(E+V)): $O(V^{3})$ for dense graphs,  $O(V^{2})$ for sparse\\
+    \end{tabular}
+
+    \subsubsection{Floyd-Warshall}
+    
+    \begin{tabular}{l}
+        \textbf{Optimal Substructure}: If P is shortest path from u to v to w, then P contains shortest paths from u to v and v to w.\\
+        \textbf{Subproblem:} S[v,w,P] = Shortest path from v to w that only uses intermediate nodes in set P\\
+        \tabitem Base case: S[v, w, $\emptyset$] = E[v,w] (Direct edge from v to w)\\
+        S[v,w,P8] = min( S[v, w, P7], \textbf{S[v, 8, P7] + S[8, w, P7]} ), where set P8 adds node 8 to set P7\\
+    \end{tabular}
+
+    \begin{verbatim}
+        int[][] APSP(E){ // Adjacency matrix E
+            int[][] S = new int[V.length][V.length]; //create memo table S
+
+            // Initialize every pair of nodes
+            for (int v=0; v<V.length; v++)
+                for (int w=0; w<V.length; w++)
+                    S[v][w] = E[v][w];
+
+            // For sets P0, P1, P2, P3, …, for every pair (v,w)
+            for (int k=0; k<V.length; k++)
+                for (int v=0; v<V.length; v++)
+                    for (int w=0; w<V.length; w++)
+                        S[v][w] = min(S[v][w], S[v][k]+S[k][w]);
+            return S;
+        }
+    \end{verbatim}
+
+    \begin{tabular}{l}
+        Running time: $O(V^{3}$\\
+    \end{tabular}
 
 
     \pagebreak
