@@ -1610,7 +1610,7 @@
         
     \begin{tabular}{l}
         Assuming AVL Tree priority queue:\\
-        \tabitem insert/push, deleteMin/pop, decreaseKey: $O(n)$\\
+        \tabitem insert/push, deleteMin/pop, decreaseKey: $O(logn)$\\
         \tabitem contains: $O(1)$\\
         insert/deleteMin: $|V|$ times each, since each node added to PQ only once\\
         relax/decreaseKey: $|E|$ times, since each edge is relaxed once\\\\
@@ -2055,7 +2055,7 @@
     \begin{tabular}{l}
         For Array A[1..n], find longest increasing (not necessarily consecutive) sequence of numbers\\
         Define sub-problems: S[i] = LIS(A[i..n]) starting at A[i]\\
-        Solve using subproblems: S[n] = 0 and $S[i] = (max_{(i,j) \in E} S[j]) + 1$ (Maximum of traversed nodes)\\
+        Solve using subproblems: $S[n] = 0$ and $S[i] = (max_{(i,j) \in E} S[j]) + 1$ (Maximum of traversed nodes)\\
     \end{tabular}
 
     \begin{verbatim}
